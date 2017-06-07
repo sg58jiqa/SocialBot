@@ -15,6 +15,8 @@ public class SocialBot {
         System.out.println("#Likes:" + instaBot.getLikesCount());
         System.out.println("#Posts:" + instaBot.getPostCount());
 
+        DBClient dbClient = new DBClient();
+        dbClient.checkInstagramFollower(instaBot);
     }
 
 }

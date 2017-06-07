@@ -3,7 +3,10 @@ import org.jinstagram.auth.model.Token;
 import org.jinstagram.entity.users.feed.MediaFeed;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.jinstagram.entity.users.feed.UserFeed;
+import org.jinstagram.entity.users.feed.UserFeedData;
 import org.jinstagram.exceptions.InstagramException;
+
+import java.util.List;
 
 /**
  * Created by bar on 06.06.17.
@@ -17,7 +20,10 @@ public class InstaBot {
     public InstaBot() {
         instagram = new Instagram(accessToken);
     }
-
+    //Return follower list.
+    public List<UserFeedData> getFollower() throws InstagramException {
+        return instagram.getUserFollowedByList(userId).getUserList();
+    }
     //Returns the number of Follower.
     public int getFollowerCount() throws InstagramException {
         UserFeed feed = instagram.getUserFollowList(userId);
@@ -31,7 +37,6 @@ public class InstaBot {
     //Returns the number of comments of the given user.
     public int getCommentCount() throws InstagramException {
         int count = 0;
-
         MediaFeed mediaFeed = instagram.getRecentMediaFeed(userId);
         for (MediaFeedData media : mediaFeed.getData()) {
             count += media.getComments().getCount();
@@ -41,7 +46,6 @@ public class InstaBot {
     //Returns the number of comments of the given user.
     public int getLikesCount() throws InstagramException {
         int count = 0;
-
         MediaFeed mediaFeed = instagram.getRecentMediaFeed(userId);
         for (MediaFeedData media : mediaFeed.getData()) {
             count += media.getLikes().getCount();

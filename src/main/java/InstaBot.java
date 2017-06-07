@@ -1,5 +1,6 @@
 import org.jinstagram.Instagram;
 import org.jinstagram.auth.model.Token;
+import org.jinstagram.entity.users.basicinfo.UserInfo;
 import org.jinstagram.entity.users.feed.MediaFeed;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.jinstagram.entity.users.feed.UserFeed;
@@ -23,6 +24,10 @@ public class InstaBot {
     //Return follower list.
     public List<UserFeedData> getFollower() throws InstagramException {
         return instagram.getUserFollowedByList(userId).getUserList();
+    }
+    //Return username of the given user_id
+    public String getUsername(String user_id) throws InstagramException {
+        return instagram.getUserInfo(user_id).getData().getFullName();
     }
     //Returns the number of Follower.
     public int getFollowerCount() throws InstagramException {

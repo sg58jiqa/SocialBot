@@ -9,14 +9,15 @@ public class SocialBot {
 
         InstaBot instaBot = new InstaBot();
 
-        System.out.println("#Follower:" + instaBot.getFollowerCount());
-        System.out.println("#Following:" + instaBot.getFollowingCount());
-        System.out.println("#Comments:" + instaBot.getCommentCount());
-        System.out.println("#Likes:" + instaBot.getLikesCount());
-        System.out.println("#Posts:" + instaBot.getPostCount());
+//        System.out.println("#Follower:" + instaBot.getFollowerCount());
+//        System.out.println("#Following:" + instaBot.getFollowingCount());
+//        System.out.println("#Comments:" + instaBot.getCommentCount());
+//        System.out.println("#Likes:" + instaBot.getLikesCount());
+//        System.out.println("#Posts:" + instaBot.getPostCount());
 
-        DBClient dbClient = new DBClient();
-        dbClient.checkInstagramFollower(instaBot);
+        DBClient dbClient = new DBClient(instaBot);
+        dbClient.checkFollower();
+        dbClient.showNotFollowingAnymore();
     }
 
 }

@@ -22,6 +22,7 @@ public abstract class SocialBot {
             db = mongoClient.getDB( "FollowerDB" );
             System.out.println("Connect to database " + db.getName() + " successfully");
             coll = db.getCollection(network + "Follower");
+            System.out.println("Load table " + network + "Follower successfully\n");
 
         }catch(Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -46,8 +47,7 @@ public abstract class SocialBot {
     public void showNotFollowingAnymore() throws InstagramException {
         System.out.println("\nDo not follow you anymore:");
         int numNotFollowAnymore = 0;
-        for(DBObject doc : coll.find(new BasicDBObject("following", 0))) {
-            System.out.println(doc.toString());
+        for(DBObject doc : coll.find(new BasicDBObject("followMe", 0))) {
             System.out.println("Username:" + getUsername(doc.get("_id").toString()));
             ++numNotFollowAnymore;
         }

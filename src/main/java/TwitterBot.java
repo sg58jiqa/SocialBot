@@ -20,7 +20,7 @@ public class TwitterBot extends SocialBot {
                 .setOAuthConsumerSecret("KqVImljOLJ2kI7f3lqKuL50cpIJPRs4uoE0lRDPiAr8wkDpn5m")
                 .setOAuthAccessToken("861603997886689280-kB8qOsGs4kpyhAe78U5CiM2jkf4LJaT")
                 .setOAuthAccessTokenSecret("aGWjf5MdYts3LxihcbR8x9yWeDZBP3e6SPdlqtaC3y0xr");
-        
+
         TwitterFactory tf = new TwitterFactory(cb.build());
         twitter = tf.getInstance();
         try {
@@ -79,7 +79,7 @@ public class TwitterBot extends SocialBot {
         return user.getFavouritesCount();
     }
 
-    int getRetweetCount() {
+    public int getRetweetCount() {
         int retweetCount = 0;
         try {
             Paging paging = new Paging(1, 100);
@@ -90,5 +90,14 @@ public class TwitterBot extends SocialBot {
             e1.printStackTrace();
         }
         return retweetCount;
+    }
+    public int getMentionsCount() {
+        int mentionCount = 0;
+        try {
+            mentionCount = twitter.getMentionsTimeline().size();
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+        return mentionCount;
     }
 }

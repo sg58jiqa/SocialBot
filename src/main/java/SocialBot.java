@@ -4,7 +4,8 @@ import org.jinstagram.exceptions.InstagramException;
 import java.util.List;
 
 /**
- * Created by bar on 07.06.17.
+ * Created by sg58jiqa on 06.06.17.
+ * sg58jiqa@studerserv.uni-leipzig.de
  */
 public abstract class SocialBot {
 
@@ -16,7 +17,7 @@ public abstract class SocialBot {
 
         try{
             // Connect to mongodb server
-            mongoClient = new MongoClient();
+            mongoClient = new MongoClient("localhost", 27017);
 
             // Connect to database
             db = mongoClient.getDB( "FollowerDB" );

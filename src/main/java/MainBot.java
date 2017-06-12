@@ -6,6 +6,7 @@ public class MainBot {
 
     public static void main(String argv[]) throws Exception {
 
+        System.out.println("INSTAGRAM:");
         InstBot instBot = new InstBot();
 
         System.out.println("#Follower:" + instBot.getFollowerCount());
@@ -17,6 +18,7 @@ public class MainBot {
         instBot.checkFollower();
         instBot.showNotFollowingAnymore();
 
+        System.out.println("\nTWITTER:\n");
         TwitterBot twitterBot = new TwitterBot();
 
         System.out.println("#Follower:" + twitterBot.getFollowerCount());
@@ -24,6 +26,7 @@ public class MainBot {
         System.out.println("#Tweets:" + twitterBot.getPostCount());
         System.out.println("#Likes:" + twitterBot.getLikesCount());
         System.out.println("#Comments:" + twitterBot.getCommentCount());
+        System.out.println("#Mentions:" + twitterBot.getMentionsCount());
         System.out.println("#Retweets:" + twitterBot.getRetweetCount());
 
         twitterBot.checkFollower();

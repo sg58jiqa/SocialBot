@@ -1,7 +1,8 @@
 import com.mongodb.*;
 import org.jinstagram.exceptions.InstagramException;
-
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by sg58jiqa on 06.06.17.
@@ -54,12 +55,89 @@ public abstract class SocialBot {
         }
         System.out.println("Total Number:" + numNotFollowAnymore);
     }
+    //Extract the followers of the given user and save them in the DB.
+    public void extractFollower(String userId) {
+        DBCollection collFollower = db.getCollection(userId + "_Follower");
+        for (String id : getFollowerIds(userId)) {
+            DBObject doc = new BasicDBObject("_id", id);
+            collFollower.save(doc);
+        }
+    }
+    public void FollowLikeComment(int number) {
 
+        createCommentTemplates();
+
+        //Extract a user which have at least n follower.
+        String randomUserId = getRandomFollowerId();
+        while (getFollowerIds(randomUserId).size() < number) {
+            System.out.println("Search new user ...");
+            randomUserId = getRandomFollowerId();
+        }
+        System.out.println("Extract " + getFollowerIds(randomUserId).size() + " follower");
+        extractFollower(randomUserId);
+
+        DBCollection collFollower = db.getCollection(randomUserId + "_Follower");
+        DBCursor curs = collFollower.find();
+
+        Random random = new Random();
+
+        while (curs.hasNext()){
+
+            String userId = (String) curs.next().get("_id");
+            followUser(userId);
+            System.out.println("Follow user:" + userId);
+
+            String postId = getPostId(userId);
+            likePost(postId);
+            if(postId.equals(null)) {
+                System.out.println("Post no found!");
+            } else {
+                System.out.println("Like post:" + postId);
+                doComment(postId, getRandomComment());
+                System.out.println("Comment post:" + postId);
+            }
+            try {
+                TimeUnit.SECONDS.sleep((long) random.nextInt(100));
+                System.out.println("Wait ...\n" );
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public abstract int getFollowerCount();
     public abstract int getFollowingCount();
     public abstract int getCommentCount();
     public abstract int getLikesCount();
     public abstract int  getPostCount();
-    public abstract String getUsername(String user_id);
+    public abstract String getUsername(String userId);
+    public abstract String getPostId(String userId);
     public abstract List<String> getFollowerIds();
+    public abstract List<String> getFollowerIds(String userId);
+    public abstract void followUser(String userId);
+    public abstract void likePost(String postId);
+    public abstract void doComment(String postId, String comment);
+
+    private String getRandomFollowerId() {
+        List<String> userIds = getFollowerIds();
+        Random randomize = new Random();
+        return userIds.get(randomize.nextInt(userIds.size()));
+    }
+    private void createCommentTemplates() {
+        DBCollection commentTemplates = db.getCollection("CommentTemplates");
+        String[] comments = {"Nice!", "I really like it!!!", "Wow!", "Awesome", "Really nice!", "Whaaat?",
+                            "That ca not be true :P", "Really?", "Absolutely amazing", "Well done!"};
+        for (String comment : comments) {
+            DBObject doc = new BasicDBObject("_id", comment);
+            commentTemplates.save(doc);
+        }
+    }
+    private String getRandomComment() {
+        DBCollection commentTemplates = db.getCollection("CommentTemplates");
+        long numComments = commentTemplates.count();
+        Random random = new Random();
+        DBCursor randomElement = commentTemplates.find().limit(1).skip(random.nextInt((int) numComments));
+        String comment = randomElement.next().get("_id").toString();
+        System.out.println("Random comment:" + comment);
+        return comment;
+    }
 }

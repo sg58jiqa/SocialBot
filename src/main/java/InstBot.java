@@ -36,6 +36,22 @@ public class InstBot extends SocialBot {
         return follower;
     }
     @Override
+    public List<String> getFollowerIds(String userId) {
+        return null;
+    }
+    @Override
+    public void followUser(String userId) {
+
+    }
+    @Override
+    public void likePost(String postId) {
+
+    }
+    @Override
+    public void doComment(String postId, String comment) {
+
+    }
+    @Override
     public String getUsername(String user_id) {
         String userName = "";
         try {
@@ -44,6 +60,10 @@ public class InstBot extends SocialBot {
             e.printStackTrace();
         }
         return userName;
+    }
+    @Override
+    public String getPostId(String userId) {
+        return null;
     }
     @Override
     public int getFollowerCount() {

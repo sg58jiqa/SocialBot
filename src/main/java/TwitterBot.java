@@ -3,6 +3,8 @@ import twitter4j.conf.ConfigurationBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Long.getLong;
+
 /**
  * Created by sg58jiqa on 06.06.17.
  * sg58jiqa@studerserv.uni-leipzig.de
@@ -31,15 +33,29 @@ public class TwitterBot extends SocialBot {
     }
 
     @Override
-    public String getUsername(String user_id) {
+    public String getUsername(String userId) {
         String userName = "";
         try {
-            User user = twitter.showUser(Long.valueOf(user_id));
+            User user = twitter.showUser(Long.valueOf(userId));
             userName = user.getName();
         } catch (TwitterException e) {
             e.printStackTrace();
         }
         return userName;
+    }
+    @Override
+    public String getPostId(String userId) {
+        Status status = null;
+        try {
+            User user = twitter.showUser(Long.parseLong(userId));
+            status = user.getStatus();
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+        if (status.equals(null)) {
+            return null;
+        }
+        return Long.toString(status.getId());
     }
 
     @Override
@@ -53,6 +69,46 @@ public class TwitterBot extends SocialBot {
             e.printStackTrace();
         }
         return followerIds;
+    }
+    @Override
+    public List<String> getFollowerIds(String userId) {
+        List<String> followerIds = new ArrayList<String>();
+        try {
+            for (long id : twitter.getFollowersIDs(Long.parseLong(userId),-1, 100).getIDs()) {
+                followerIds.add(Long.toString(id));
+            }
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+        return followerIds;
+    }
+    @Override
+    public void followUser(String userId) {
+        try {
+            twitter.createFriendship(Long.parseLong(userId));
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void likePost(String tweetId) {
+        if (tweetId.equals(null)) {
+            return;
+        }
+        try {
+            twitter.createFavorite(Long.parseLong(tweetId));
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void doComment(String tweetId, String comment) {
+            StatusUpdate statusUpdate = new StatusUpdate(comment);
+        try {
+            twitter.updateStatus(statusUpdate);
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -63,11 +63,13 @@ public abstract class SocialBot {
             collFollower.save(doc);
         }
     }
+    //Choose follower randomly, extract 100 follower and follow n user.
+    //Like and comment one post of each user.
     public void FollowLikeComment(int number) {
 
-        createCommentTemplates();
+        // createCommentTemplates();
 
-        //Extract a user which have at least n follower.
+        //Extract a user which have at least number follower.
         String randomUserId = getRandomFollowerId();
         while (getFollowerIds(randomUserId).size() < number) {
             System.out.println("Search new user ...");
@@ -82,11 +84,12 @@ public abstract class SocialBot {
         Random random = new Random();
 
         while (curs.hasNext()){
-
+            //Follow
             String userId = (String) curs.next().get("_id");
             followUser(userId);
             System.out.println("Follow user:" + userId);
 
+            //Like and comment post
             String postId = getPostId(userId);
             likePost(postId);
             if(postId.equals(null)) {
@@ -96,6 +99,7 @@ public abstract class SocialBot {
                 doComment(postId, getRandomComment());
                 System.out.println("Comment post:" + postId);
             }
+            //Wait a random time.
             try {
                 TimeUnit.SECONDS.sleep((long) random.nextInt(100));
                 System.out.println("Wait ...\n" );

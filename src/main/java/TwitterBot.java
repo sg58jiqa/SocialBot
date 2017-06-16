@@ -3,8 +3,6 @@ import twitter4j.conf.ConfigurationBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Long.getLong;
-
 /**
  * Created by sg58jiqa on 06.06.17.
  * sg58jiqa@studerserv.uni-leipzig.de

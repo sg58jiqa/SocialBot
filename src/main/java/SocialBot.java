@@ -13,6 +13,7 @@ public abstract class SocialBot {
     private MongoClient mongoClient;
     private DB db;
     private DBCollection coll;
+    private Random randomize;
 
     public SocialBot(String network) {
 
@@ -24,7 +25,9 @@ public abstract class SocialBot {
             db = mongoClient.getDB( "FollowerDB" );
             System.out.println("Connect to database " + db.getName() + " successfully");
             coll = db.getCollection(network + "Follower");
-            System.out.println("Load table " + network + "Follower successfully\n");
+            //System.out.println("Load table " + network + "Follower successfully\n");
+
+            randomize = new Random();
 
         }catch(Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -50,62 +53,74 @@ public abstract class SocialBot {
         System.out.println("\nDo not follow you anymore:");
         int numNotFollowAnymore = 0;
         for(DBObject doc : coll.find(new BasicDBObject("followMe", 0))) {
-            System.out.println("Username:" + getUsername(doc.get("_id").toString()));
+            System.out.println("Username:" + getScreenName(doc.get("_id").toString()));
             ++numNotFollowAnymore;
         }
         System.out.println("Total Number:" + numNotFollowAnymore);
     }
     //Extract the followers of the given user and save them in the DB.
-    public void extractFollower(String userId) {
-        DBCollection collFollower = db.getCollection(userId + "_Follower");
+    private void extractFollower(String userId, int number, String collectionName) {
+        DBCollection collFollower = db.getCollection(collectionName);
         for (String id : getFollowerIds(userId)) {
-            DBObject doc = new BasicDBObject("_id", id);
-            collFollower.save(doc);
+            if(notFollowing(id) && number > 0) {
+                DBObject doc = new BasicDBObject("_id", id).append("follow", 0);
+                collFollower.save(doc);
+                --number;
+            }
+            if(number == 0) {
+                return;
+            }
+            //waitSomeTime(20);
         }
     }
-    //Choose follower randomly, extract 100 follower and follow n user.
-    //Like and comment one post of each user.
-    public void FollowLikeComment(int number) {
+    //Load number of followers of the given user and like or comment one post of each user.
+    public void FollowLikeComment(String screenName, int number, boolean doLike, boolean doComment) {
 
-        // createCommentTemplates();
+        String rootUserId = getUserId(screenName);
+        String collectionName = rootUserId + "_Follower" + "_follow" + "_" + doLike + "_" + doComment;
 
-        //Extract a user which have at least number follower.
-        String randomUserId = getRandomFollowerId();
-        while (getFollowerIds(randomUserId).size() < number) {
-            System.out.println("Search new user ...");
-            randomUserId = getRandomFollowerId();
-        }
-        System.out.println("Extract " + getFollowerIds(randomUserId).size() + " follower");
-        extractFollower(randomUserId);
+        //DBCollection Follower = db.getCollection(collectionName);
+        //Follower.drop();
 
-        DBCollection collFollower = db.getCollection(randomUserId + "_Follower");
+        extractFollower(rootUserId, number, collectionName );
+
+        DBCollection collFollower = db.getCollection(collectionName);
         DBCursor curs = collFollower.find();
 
-        Random random = new Random();
+        System.out.println(collFollower.count()
+                + " follower from " + getScreenName(rootUserId) + " userId:" + rootUserId + "\n");
 
         while (curs.hasNext()){
+            //Show how many users left
+            System.out.println(collFollower.find(new BasicDBObject("follow", 0)).size() + " user left!");
+
             //Follow
             String userId = (String) curs.next().get("_id");
-            followUser(userId);
-            System.out.println("Follow user:" + userId);
-
-            //Like and comment post
-            String postId = getPostId(userId);
-            likePost(postId);
-            if(postId.equals(null)) {
-                System.out.println("Post no found!");
+            if(notFollowing(userId)) {
+                followUser(userId);
+                DBObject doc = new BasicDBObject("_id", userId).append("follow", 1);
+                collFollower.save(doc);
+                System.out.println(("Follow user:" + getScreenName(userId) + " userId:" + userId));
             } else {
-                System.out.println("Like post:" + postId);
-                doComment(postId, getRandomComment());
-                System.out.println("Comment post:" + postId);
+                DBObject doc = new BasicDBObject("_id", userId).append("follow", 0);
+                collFollower.save(doc);
             }
-            //Wait a random time.
-            try {
-                TimeUnit.SECONDS.sleep((long) random.nextInt(100));
-                System.out.println("Wait ...\n" );
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            //Like or comment
+            if (doLike || doComment) {
+                String postId = getRandomPostId(userId);
+
+                if (doLike) {
+                    likePost(postId);
+                    System.out.println("Like post:" + postId);
+                }
+
+                if (doComment) {
+                    doComment(postId, getScreenName(userId),getRandomComment());
+                    System.out.println("Comment post:" + postId);
+                }
             }
+            //Wait
+            waitSomeTime(60);
         }
     }
     public abstract int getFollowerCount();
@@ -113,13 +128,15 @@ public abstract class SocialBot {
     public abstract int getCommentCount();
     public abstract int getLikesCount();
     public abstract int  getPostCount();
-    public abstract String getUsername(String userId);
-    public abstract String getPostId(String userId);
+    public abstract String getScreenName(String userId);
+    public abstract String getRandomPostId(String userId);
     public abstract List<String> getFollowerIds();
     public abstract List<String> getFollowerIds(String userId);
     public abstract void followUser(String userId);
     public abstract void likePost(String postId);
-    public abstract void doComment(String postId, String comment);
+    public abstract void doComment(String postId, String userName, String comment);
+    public abstract String getUserId(String screenName);
+    public abstract boolean notFollowing(String userId);
 
     private String getRandomFollowerId() {
         List<String> userIds = getFollowerIds();
@@ -143,5 +160,12 @@ public abstract class SocialBot {
         String comment = randomElement.next().get("_id").toString();
         System.out.println("Random comment:" + comment);
         return comment;
+    }
+    private void waitSomeTime(int maxTimeToWait){
+        try {
+            TimeUnit.SECONDS.sleep((long) randomize.nextInt(maxTimeToWait));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

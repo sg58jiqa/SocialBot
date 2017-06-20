@@ -21,16 +21,18 @@ public class MainBot {
         System.out.println("TWITTER:");
         TwitterBot twitterBot = new TwitterBot();
 
-        System.out.println("#Follower:" + twitterBot.getFollowerCount());
-        System.out.println("#Following:" + twitterBot.getFollowingCount());
-        System.out.println("#Tweets:" + twitterBot.getPostCount());
-        System.out.println("#Likes:" + twitterBot.getLikesCount());
-        System.out.println("#Comments:" + twitterBot.getCommentCount());
-        System.out.println("#Mentions:" + twitterBot.getMentionsCount());
-       System.out.println("#Retweets:" + twitterBot.getRetweetCount());
+//        System.out.println("#Follower:" + twitterBot.getFollowerCount());
+//        System.out.println("#Following:" + twitterBot.getFollowingCount());
+//        System.out.println("#Tweets:" + twitterBot.getPostCount());
+//        System.out.println("#Likes:" + twitterBot.getLikesCount());
+//        System.out.println("#Comments:" + twitterBot.getCommentCount());
+//        System.out.println("#Mentions:" + twitterBot.getMentionsCount());
+//        System.out.println("#Retweets:" + twitterBot.getRetweetCount());
 
         //twitterBot.checkFollower();
         //twitterBot.showNotFollowingAnymore();
-        twitterBot.FollowLikeComment(10);
+        twitterBot.FollowLikeComment("alo_oficial",20, false, false);
+        //twitterBot.FollowLikeComment(100, true, false);
+        //twitterBot.FollowLikeComment(100,true ,true);
     }
 }

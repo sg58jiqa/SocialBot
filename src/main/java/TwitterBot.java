@@ -2,6 +2,7 @@ import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by sg58jiqa on 06.06.17.
@@ -29,38 +30,38 @@ public class TwitterBot extends SocialBot {
             e.printStackTrace();
         }
     }
-
     @Override
-    public String getUsername(String userId) {
+    public String getScreenName(String userId) {
         String userName = "";
         try {
             User user = twitter.showUser(Long.valueOf(userId));
-            userName = user.getName();
+            userName = user.getScreenName();
         } catch (TwitterException e) {
             e.printStackTrace();
         }
         return userName;
     }
     @Override
-    public String getPostId(String userId) {
+    public String getRandomPostId(String userId) {
         Status status = null;
+        Random random = new Random();
         try {
-            User user = twitter.showUser(Long.parseLong(userId));
-            status = user.getStatus();
+            List<Status> tweets = twitter.getUserTimeline(Long.parseLong(userId));
+            status = tweets.get(random.nextInt(tweets.size()-1));
         } catch (TwitterException e) {
             e.printStackTrace();
         }
-        if (status.equals(null)) {
-            return null;
+        if (status == null) {
+            return "";
         }
         return Long.toString(status.getId());
     }
-
     @Override
     public List<String> getFollowerIds() {
         List<String> followerIds = new ArrayList<String>();
         try {
-            for (long id : twitter.getFollowersIDs(-1).getIDs()) {
+            long[] ids = twitter.getFollowersIDs(user.getId()).getIDs();
+            for (long id : ids) {
                 followerIds.add(Long.toString(id));
             }
         } catch (TwitterException e) {
@@ -72,7 +73,9 @@ public class TwitterBot extends SocialBot {
     public List<String> getFollowerIds(String userId) {
         List<String> followerIds = new ArrayList<String>();
         try {
-            for (long id : twitter.getFollowersIDs(Long.parseLong(userId),-1, 100).getIDs()) {
+            long[] ids = twitter.getFollowersIDs(Long.parseLong(userId), -1, 1000).getIDs();
+            System.out.println("Extract follower ...");
+            for (long id : ids ) {
                 followerIds.add(Long.toString(id));
             }
         } catch (TwitterException e) {
@@ -90,9 +93,6 @@ public class TwitterBot extends SocialBot {
     }
     @Override
     public void likePost(String tweetId) {
-        if (tweetId.equals(null)) {
-            return;
-        }
         try {
             twitter.createFavorite(Long.parseLong(tweetId));
         } catch (TwitterException e) {
@@ -100,15 +100,15 @@ public class TwitterBot extends SocialBot {
         }
     }
     @Override
-    public void doComment(String tweetId, String comment) {
-            StatusUpdate statusUpdate = new StatusUpdate(comment);
+    public void doComment(String tweetId, String screenName, String comment) {
+        StatusUpdate statusUpdate = new StatusUpdate(comment + " @" + screenName);
+        statusUpdate.setInReplyToStatusId(Long.parseLong(tweetId));
         try {
             twitter.updateStatus(statusUpdate);
         } catch (TwitterException e) {
             e.printStackTrace();
         }
     }
-
     @Override
     public int getFollowerCount() {
         return user.getFollowersCount();
@@ -131,6 +131,28 @@ public class TwitterBot extends SocialBot {
     @Override
     public int getLikesCount() {
         return user.getFavouritesCount();
+    }
+    @Override
+    public String getUserId(String screenName) {
+        String userId ="";
+        try {
+            User user = twitter.showUser(screenName);
+            userId = String.valueOf(user.getId());
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+        return userId;
+    }
+    @Override
+    public boolean notFollowing(String userId) {
+        boolean notFollowing = false;
+        try {
+            Relationship relationship = twitter.showFriendship(Long.parseLong(userId), user.getId());
+            notFollowing = !relationship.isSourceFollowedByTarget();
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+        return notFollowing;
     }
 
     public int getRetweetCount() {

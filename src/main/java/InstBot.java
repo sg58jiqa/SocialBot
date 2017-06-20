@@ -48,11 +48,20 @@ public class InstBot extends SocialBot {
 
     }
     @Override
-    public void doComment(String postId, String comment) {
+    public void doComment(String postId, String userName, String comment) {
 
     }
+
+    public String getUserId(String screenName) {
+        return null;
+    }
+
+    public boolean notFollowing(String userId) {
+        return false;
+    }
+
     @Override
-    public String getUsername(String user_id) {
+    public String getScreenName(String user_id) {
         String userName = "";
         try {
             return instagram.getUserInfo(user_id).getData().getFullName();
@@ -62,7 +71,7 @@ public class InstBot extends SocialBot {
         return userName;
     }
     @Override
-    public String getPostId(String userId) {
+    public String getRandomPostId(String userId) {
         return null;
     }
     @Override

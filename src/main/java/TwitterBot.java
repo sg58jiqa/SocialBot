@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.System.exit;
+
 /**
  * Created by sg58jiqa on 06.06.17.
  * sg58jiqa@studerserv.uni-leipzig.de
@@ -47,12 +49,17 @@ public class TwitterBot extends SocialBot {
         Random random = new Random();
         try {
             List<Status> tweets = twitter.getUserTimeline(Long.parseLong(userId));
-            status = tweets.get(random.nextInt(tweets.size()-1));
+            if(tweets.size() > 0) {
+                int tweetAtPosition = random.nextInt(tweets.size()-1);
+                System.out.println("Tweet " + tweetAtPosition);
+                status = tweets.get(tweetAtPosition);
+            }
         } catch (TwitterException e) {
             e.printStackTrace();
         }
         if (status == null) {
-            return "";
+            System.out.println("No tweets found!");
+            exit(1);
         }
         return Long.toString(status.getId());
     }
@@ -84,30 +91,36 @@ public class TwitterBot extends SocialBot {
         return followerIds;
     }
     @Override
-    public void followUser(String userId) {
+    public boolean followUser(String userId) {
         try {
             twitter.createFriendship(Long.parseLong(userId));
         } catch (TwitterException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
     @Override
-    public void likePost(String tweetId) {
+    public boolean likePost(String tweetId) {
         try {
             twitter.createFavorite(Long.parseLong(tweetId));
         } catch (TwitterException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
     @Override
-    public void doComment(String tweetId, String screenName, String comment) {
+    public boolean doComment(String tweetId, String screenName, String comment) {
         StatusUpdate statusUpdate = new StatusUpdate(comment + " @" + screenName);
         statusUpdate.setInReplyToStatusId(Long.parseLong(tweetId));
         try {
             twitter.updateStatus(statusUpdate);
         } catch (TwitterException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
     @Override
     public int getFollowerCount() {
@@ -128,6 +141,18 @@ public class TwitterBot extends SocialBot {
         return user.getStatusesCount();
     }
 
+    public int getPostNumber(String userId) {
+        try {
+            List<Status> tweets = twitter.getUserTimeline(Long.parseLong(userId));
+            if(tweets.size() > 0) {
+               return tweets.size();
+            }
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     @Override
     public int getLikesCount() {
         return user.getFavouritesCount();
@@ -144,15 +169,26 @@ public class TwitterBot extends SocialBot {
         return userId;
     }
     @Override
-    public boolean notFollowing(String userId) {
-        boolean notFollowing = false;
+    public boolean isMyFriend(String userId) {
+        boolean isFriend = false;
         try {
             Relationship relationship = twitter.showFriendship(Long.parseLong(userId), user.getId());
-            notFollowing = !relationship.isSourceFollowedByTarget();
+            isFriend = relationship.isSourceFollowedByTarget();
         } catch (TwitterException e) {
             e.printStackTrace();
         }
-        return notFollowing;
+        return isFriend;
+    }
+
+    public List<String> getNotFollowerIds() {
+        List<String> notFollow = new ArrayList<String>();
+        try {
+            long[] followersIDs = twitter.getFollowersIDs(user.getId()).getIDs();
+            long[] friendsIDs = twitter.getFriendsIDs(user.getId()).getIDs();
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+        return notFollow;
     }
 
     public int getRetweetCount() {

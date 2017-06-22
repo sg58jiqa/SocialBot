@@ -29,10 +29,12 @@ public class MainBot {
 //        System.out.println("#Mentions:" + twitterBot.getMentionsCount());
 //        System.out.println("#Retweets:" + twitterBot.getRetweetCount());
 
-        //twitterBot.checkFollower();
-        //twitterBot.showNotFollowingAnymore();
-        twitterBot.FollowLikeComment("alo_oficial",20, false, false);
-        //twitterBot.FollowLikeComment(100, true, false);
+        //twitterBot.checkMyFollower();
+        //twitterBot.showNotFollow();
+        //twitterBot.FollowLikeComment("alo_oficial", 20, false, false);
+        twitterBot.showNewFollower("507672047_Follower_follow_false_false");
+        //twitterBot.FollowLikeComment("MercedesAMGF1",13, true, false);
+        twitterBot.showNewFollower("26235265_Follower_follow_true_false");
         //twitterBot.FollowLikeComment(100,true ,true);
     }
 }

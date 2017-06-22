@@ -40,26 +40,29 @@ public class InstBot extends SocialBot {
         return null;
     }
     @Override
-    public void followUser(String userId) {
-
+    public boolean followUser(String userId) {
+        return false;
     }
     @Override
-    public void likePost(String postId) {
-
+    public boolean likePost(String postId) {
+        return false;
     }
     @Override
-    public void doComment(String postId, String userName, String comment) {
-
+    public boolean doComment(String postId, String userName, String comment) {
+        return false;
     }
-
+    @Override
     public String getUserId(String screenName) {
         return null;
     }
-
-    public boolean notFollowing(String userId) {
+    @Override
+    public boolean isMyFriend(String userId) {
         return false;
     }
-
+    @Override
+    public List<String> getNotFollowerIds() {
+        return null;
+    }
     @Override
     public String getScreenName(String user_id) {
         String userName = "";
@@ -132,5 +135,9 @@ public class InstBot extends SocialBot {
             e.printStackTrace();
         }
         return postCount;
+    }
+
+    public int getPostNumber(String userId) {
+        return 0;
     }
 }

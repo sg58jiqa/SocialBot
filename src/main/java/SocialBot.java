@@ -181,6 +181,7 @@ public abstract class SocialBot {
         return getPostCount(userId) >= postCount && isActive(userId, daysAgo) && validFFRation(userId, ffRation);
     }
 
+    //Wait between 0 and maxTimeToWait seconds.
     void waitSomeTime(int maxTimeToWait){
         try {
             TimeUnit.SECONDS.sleep((long) randomize.nextInt(maxTimeToWait));

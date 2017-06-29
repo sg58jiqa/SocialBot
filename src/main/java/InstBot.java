@@ -18,11 +18,11 @@ public class InstBot extends SocialBot {
     private String userId;
     private Instagram instagram;
 
-    InstBot() {
+    InstBot(String token, String secret, String userId) {
         super("Instagram");
-        Token accessToken = new Token("5434445380.393ca10.113d56f3f8814e069e5e4f49b9fa79d0", "393ca102ec3048d1ad12e9aa22c46ae2");
+        Token accessToken = new Token(token, secret);
         instagram = new Instagram(accessToken);
-        userId = "5434445380";
+        this.userId = userId;
     }
     @Override
     public List<String> getFollowerIds() {

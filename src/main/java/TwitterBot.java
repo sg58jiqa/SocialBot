@@ -21,14 +21,14 @@ public class TwitterBot extends SocialBot {
     private Twitter twitter;
     private User user;
 
-    TwitterBot() {
+    TwitterBot(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
         super("Twitter");
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-                .setOAuthConsumerKey("1TkNHb6dTTUvQE4uVGaYFchhb")
-                .setOAuthConsumerSecret("DXf1dHPgmFge8G4eXMP7h1c24JqSdFYR8RZIYF4IGKeM8vTsxt")
-                .setOAuthAccessToken("861603997886689280-wbwCOCjXgcwo148lTvKwXGjS792PiEB")
-                .setOAuthAccessTokenSecret("cRfhdO8t5mth6BGOjcPJCdASjvCcXq6QuE6bOZUn8u53t");
+                .setOAuthConsumerKey(consumerKey)
+                .setOAuthConsumerSecret(consumerSecret)
+                .setOAuthAccessToken(accessToken)
+                .setOAuthAccessTokenSecret(accessTokenSecret);
 
         TwitterFactory tf = new TwitterFactory(cb.build());
         twitter = tf.getInstance();

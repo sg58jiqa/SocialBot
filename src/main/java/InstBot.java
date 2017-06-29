@@ -15,13 +15,14 @@ import java.util.List;
  */
 public class InstBot extends SocialBot {
 
-    private String userId = "5434445380";
+    private String userId;
     private Instagram instagram;
 
     InstBot() {
         super("Instagram");
         Token accessToken = new Token("5434445380.393ca10.113d56f3f8814e069e5e4f49b9fa79d0", "393ca102ec3048d1ad12e9aa22c46ae2");
         instagram = new Instagram(accessToken);
+        userId = "5434445380";
     }
     @Override
     public List<String> getFollowerIds() {
@@ -35,34 +36,58 @@ public class InstBot extends SocialBot {
         }
         return follower;
     }
+
     @Override
     public List<String> getFollowerIds(String userId) {
         return null;
     }
+
     @Override
     public boolean followUser(String userId) {
         return false;
     }
+
     @Override
     public boolean likePost(String postId) {
         return false;
     }
+
     @Override
     public boolean doComment(String postId, String userName, String comment) {
         return false;
     }
+
     @Override
     public String getUserId(String screenName) {
         return null;
     }
+
     @Override
-    public boolean isMyFriend(String userId) {
+    public boolean isNotMyFriend(String userId) {
         return false;
     }
+
     @Override
-    public List<String> getNotFollowerIds() {
-        return null;
+    public boolean isActive(String userId, int daysAgo) {
+        return false;
     }
+
+    @Override
+    public boolean validFFRation(String userId, double[] ffRation) {
+        return false;
+    }
+
+    @Override
+    public void unfollowUsers(int number, int dayLimit) {}
+
+    public void showMetrics() {
+        System.out.println("#Follower:" + getFollowerCount());
+        System.out.println("#Following:" + getFollowingCount());
+        System.out.println("#Posts:" + getPostCount());
+        System.out.println("#Likes:" + getLikesCount());
+        System.out.println("#Comments:" + getCommentCount());
+    }
+
     @Override
     public String getScreenName(String user_id) {
         String userName = "";
@@ -73,10 +98,12 @@ public class InstBot extends SocialBot {
         }
         return userName;
     }
+
     @Override
     public String getRandomPostId(String userId) {
         return null;
     }
+
     @Override
     public int getFollowerCount() {
         int followerCount = 0;
@@ -88,6 +115,7 @@ public class InstBot extends SocialBot {
         }
         return followerCount;
     }
+
     @Override
     public int getFollowingCount() {
         int followingCount = 0;
@@ -99,6 +127,7 @@ public class InstBot extends SocialBot {
         }
         return followingCount;
     }
+
     @Override
     public int getCommentCount() {
         int commentCount = 0;
@@ -112,6 +141,7 @@ public class InstBot extends SocialBot {
         }
         return commentCount;
     }
+
     @Override
     public int getLikesCount() {
         int count = 0;
@@ -125,6 +155,7 @@ public class InstBot extends SocialBot {
         }
         return count;
     }
+
     @Override
     public int getPostCount() {
         int postCount = 0;
@@ -137,7 +168,8 @@ public class InstBot extends SocialBot {
         return postCount;
     }
 
-    public int getPostNumber(String userId) {
+    @Override
+    public int getPostCount(String userId) {
         return 0;
     }
 }
